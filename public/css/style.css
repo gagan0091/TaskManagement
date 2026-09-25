@@ -1,0 +1,11 @@
+body {
+    background-color: #f5f6f8;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+.table-responsive {
+    margin-bottom: 1rem;
+}

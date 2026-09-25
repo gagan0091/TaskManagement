@@ -1,0 +1,64 @@
+<%- include('../partials/header') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0"><%= task.title %></h3>
+    <span class="badge fs-6 bg-<%= task.status === 'completed' ? 'success' : (task.status === 'in-progress' ? 'warning' : 'secondary') %>">
+        <%= task.status %>
+    </span>
+</div>
+<p><%= task.description || 'No description.' %></p>
+<div class="row mb-4">
+    <div class="col-md-3"><strong>Product:</strong><br><a href="/products/<%= task.product._id %>"><%= task.product.name %></a></div>
+    <div class="col-md-3"><strong>Quantity:</strong><br><%= task.quantity %></div>
+    <div class="col-md-3"><strong>Priority:</strong><br><%= task.priority %></div>
+    <div class="col-md-3"><strong>Due Date:</strong><br><%= task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '—' %></div>
+</div>
+<div class="row mb-4">
+    <div class="col-md-6"><strong>Created By:</strong> <%= task.createdBy.name %></div>
+    <div class="col-md-6"><strong>Assigned To:</strong> <%= task.assignedTo.name %></div>
+</div>
+
+<h5>Raw Material Allocated (snapshot)</h5>
+<table class="table table-sm table-striped bg-white shadow-sm">
+    <thead><tr><th>Material</th><th>Quantity</th></tr></thead>
+    <tbody>
+        <% task.materialsUsed.forEach(function (m) { %>
+            <tr><td><%= m.name %></td><td><%= m.quantity %> <%= m.unit %></td></tr>
+        <% }); %>
+    </tbody>
+</table>
+
+<h5 class="mt-4">Status History</h5>
+<ul class="list-group mb-4">
+    <% task.statusHistory.forEach(function (h) { %>
+        <li class="list-group-item d-flex justify-content-between">
+            <span class="text-capitalize"><%= h.status %></span>
+            <span class="text-muted"><%= new Date(h.changedAt).toLocaleString() %></span>
+        </li>
+    <% }); %>
+</ul>
+
+<div class="d-flex gap-2 mb-4">
+    <% if (task.assignedTo._id === currentUser.id && task.status === 'pending') { %>
+        <form action="/tasks/<%= task._id %>/status" method="POST">
+            <input type="hidden" name="status" value="in-progress">
+            <button type="submit" class="btn btn-warning">Start Task</button>
+        </form>
+    <% } %>
+    <% if (task.assignedTo._id === currentUser.id && task.status === 'in-progress') { %>
+        <form action="/tasks/<%= task._id %>/status" method="POST">
+            <input type="hidden" name="status" value="completed">
+            <button type="submit" class="btn btn-success">Mark Completed</button>
+        </form>
+    <% } %>
+    <% if (currentUser.role === 'admin') { %>
+        <a href="/tasks/<%= task._id %>/edit" class="btn btn-outline-primary">Edit</a>
+        <% if (task.status !== 'completed') { %>
+            <form action="/tasks/<%= task._id %>?_method=DELETE" method="POST"
+                  onsubmit="return confirm('Delete this task? Allocated raw material will be reverted to inventory.');">
+                <button type="submit" class="btn btn-outline-danger">Delete &amp; Revert Inventory</button>
+            </form>
+        <% } %>
+    <% } %>
+</div>
+<a href="/tasks" class="btn btn-link">Back to Tasks</a>
+<%- include('../partials/footer') %>

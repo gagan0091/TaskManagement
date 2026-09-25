@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+<h3 class="mb-4">Welcome, <%= currentUser.name %></h3>
+
+<% if (isAdmin && taskAnalytics) { %>
+<div class="row g-3 mb-4">
+    <% taskAnalytics.byStatus.forEach(function (s) { %>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h2 class="mb-0"><%= s.count %></h2>
+                    <small class="text-muted text-capitalize"><%= s._id %></small>
+                </div>
+            </div>
+        </div>
+    <% }); %>
+</div>
+<% } %>
+
+<div class="row g-4">
+    <div class="col-md-<%= isAdmin ? 7 : 12 %>">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Recent Tasks</span>
+                <a href="/tasks" class="btn btn-sm btn-outline-primary">View all</a>
+            </div>
+            <ul class="list-group list-group-flush">
+                <% if (tasks.length === 0) { %>
+                    <li class="list-group-item text-muted">No tasks yet.</li>
+                <% } %>
+                <% tasks.forEach(function (t) { %>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="/tasks/<%= t._id %>"><%= t.title %></a>
+                        <span class="badge bg-<%= t.status === 'completed' ? 'success' : (t.status === 'in-progress' ? 'warning' : 'secondary') %>">
+                            <%= t.status %>
+                        </span>
+                    </li>
+                <% }); %>
+            </ul>
+        </div>
+    </div>
+
+    <% if (isAdmin) { %>
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Low Stock Materials</span>
+                <a href="/admin/materials?lowStock=true" class="btn btn-sm btn-outline-danger">View all</a>
+            </div>
+            <ul class="list-group list-group-flush">
+                <% if (lowStock.length === 0) { %>
+                    <li class="list-group-item text-muted">Nothing is low on stock.</li>
+                <% } %>
+                <% lowStock.forEach(function (m) { %>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><%= m.name %></span>
+                        <span class="text-danger"><%= m.quantity %> <%= m.unit %></span>
+                    </li>
+                <% }); %>
+            </ul>
+        </div>
+    </div>
+    <% } %>
+</div>
+<%- include('partials/footer') %>

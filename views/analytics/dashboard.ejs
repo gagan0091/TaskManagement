@@ -1,0 +1,76 @@
+<%- include('../partials/header') %>
+<h3 class="mb-4">Analytics</h3>
+
+<h5>Inventory</h5>
+<div class="table-responsive mb-4">
+<table class="table table-sm table-striped bg-white shadow-sm">
+    <thead><tr><th>Material</th><th>Current</th><th>Added</th><th>Consumed</th><th>Reverted</th><th>Net Consumed</th><th>Low Stock</th></tr></thead>
+    <tbody>
+        <% inventory.forEach(function (i) { %>
+        <tr class="<%= i.isLowStock ? 'table-danger' : '' %>">
+            <td><%= i.name %></td>
+            <td><%= i.currentStock %> <%= i.unit %></td>
+            <td><%= i.totalAdded %></td>
+            <td><%= i.totalConsumed %></td>
+            <td><%= i.totalReverted %></td>
+            <td><%= i.netConsumed %></td>
+            <td><%= i.isLowStock ? 'Yes' : 'No' %></td>
+        </tr>
+        <% }); %>
+    </tbody>
+</table>
+</div>
+
+<h5>Production (Completed Tasks by Product)</h5>
+<div class="table-responsive mb-4">
+<table class="table table-sm table-striped bg-white shadow-sm">
+    <thead><tr><th>Product</th><th>Tasks Completed</th><th>Units Produced</th><th>Current Product Stock</th></tr></thead>
+    <tbody>
+        <% production.forEach(function (p) { %>
+        <tr>
+            <td><%= p.name %></td>
+            <td><%= p.tasksCompleted %></td>
+            <td><%= p.unitsProduced %></td>
+            <td><%= p.currentProductStock %></td>
+        </tr>
+        <% }); %>
+    </tbody>
+</table>
+</div>
+
+<h5>Material Usage by Product</h5>
+<div class="table-responsive mb-4">
+<table class="table table-sm table-striped bg-white shadow-sm">
+    <thead><tr><th>Product</th><th>Material</th><th>Total Used</th><th># Tasks</th></tr></thead>
+    <tbody>
+        <% materialUsage.forEach(function (m) { %>
+        <tr>
+            <td><%= m.productName %></td>
+            <td><%= m.materialName %></td>
+            <td><%= m.totalQuantity %> <%= m.unit %></td>
+            <td><%= m.tasks %></td>
+        </tr>
+        <% }); %>
+    </tbody>
+</table>
+</div>
+
+<h5>Tasks by User</h5>
+<div class="table-responsive mb-4">
+<table class="table table-sm table-striped bg-white shadow-sm">
+    <thead><tr><th>User</th><th>Total</th><th>Pending</th><th>In Progress</th><th>Completed</th><th>Units Assigned</th></tr></thead>
+    <tbody>
+        <% tasks.byUser.forEach(function (u) { %>
+        <tr>
+            <td><%= u.name %></td>
+            <td><%= u.total %></td>
+            <td><%= u.pending %></td>
+            <td><%= u.inProgress %></td>
+            <td><%= u.completed %></td>
+            <td><%= u.unitsAssigned %></td>
+        </tr>
+        <% }); %>
+    </tbody>
+</table>
+</div>
+<%- include('../partials/footer') %>

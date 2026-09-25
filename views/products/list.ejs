@@ -1,0 +1,37 @@
+<%- include('../partials/header') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Products</h3>
+    <% if (currentUser.role === 'admin') { %>
+        <a href="/products/new" class="btn btn-primary">+ New Product</a>
+    <% } %>
+</div>
+<div class="table-responsive">
+<table class="table table-striped bg-white shadow-sm">
+    <thead>
+        <tr><th>Name</th><th>SKU</th><th>Recipe Items</th><th>Stock Produced</th><th>Active</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        <% products.forEach(function (p) { %>
+        <tr>
+            <td><a href="/products/<%= p._id %>"><%= p.name %></a></td>
+            <td><%= p.sku %></td>
+            <td><%= p.materials.length %></td>
+            <td><%= p.stockQuantity %></td>
+            <td><%= p.isActive ? 'Yes' : 'No' %></td>
+            <td class="text-nowrap">
+                <a href="/products/<%= p._id %>" class="btn btn-sm btn-outline-secondary">View</a>
+                <% if (currentUser.role === 'admin') { %>
+                    <a href="/products/<%= p._id %>/edit" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <form action="/products/<%= p._id %>?_method=DELETE" method="POST" class="d-inline"
+                          onsubmit="return confirm('Delete this product?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                <% } %>
+            </td>
+        </tr>
+        <% }); %>
+    </tbody>
+</table>
+</div>
+<%- include('../partials/pagination', { pagination: pagination, extraQuery: '' }) %>
+<%- include('../partials/footer') %>

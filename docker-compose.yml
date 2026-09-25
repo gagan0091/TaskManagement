@@ -1,0 +1,30 @@
+# MongoDB transactions need a replica set, so Mongo runs as a single-node replica set here.
+services:
+  mongo:
+    image: mongo:7
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: >
+        echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      retries: 30
+
+  api:
+    build: .
+    ports:
+      - "5000:5000"
+    env_file: .env
+    environment:
+      MONGO_URI: mongodb://mongo:27017/task_management?replicaSet=rs0
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo_data:

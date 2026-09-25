@@ -1,0 +1,53 @@
+<%- include('../partials/header') %>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h3 class="mb-4"><%= material ? 'Edit' : 'New' %> Raw Material</h3>
+                <form method="POST" action="<%= material ? ('/admin/materials/' + material._id + '?_method=PUT') : '/admin/materials' %>">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" name="name" class="form-control" value="<%= material ? material.name : '' %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">SKU</label>
+                        <input type="text" name="sku" class="form-control" value="<%= material ? material.sku : '' %>" required>
+                    </div>
+                    <% if (!material) { %>
+                    <div class="mb-3">
+                        <label class="form-label">Unit</label>
+                        <select name="unit" class="form-select" required>
+                            <% UNITS.forEach(function (u) { %>
+                                <option value="<%= u %>"><%= u %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Opening Stock Quantity</label>
+                        <input type="number" step="0.001" min="0" name="quantity" class="form-control" value="0">
+                    </div>
+                    <% } %>
+                    <div class="mb-3">
+                        <label class="form-label">Minimum Stock Level (low-stock alert)</label>
+                        <input type="number" step="0.001" min="0" name="minStockLevel" class="form-control"
+                               value="<%= material ? material.minStockLevel : 0 %>">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cost per Unit</label>
+                        <input type="number" step="0.01" min="0" name="costPerUnit" class="form-control"
+                               value="<%= material ? material.costPerUnit : 0 %>">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a href="/admin/materials" class="btn btn-link">Cancel</a>
+                </form>
+                <% if (material) { %>
+                    <p class="text-muted mt-3 mb-0">
+                        To change the actual stock quantity use "Add Stock" / "Adjust" from the inventory list,
+                        so the history stays accurate.
+                    </p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../partials/footer') %>

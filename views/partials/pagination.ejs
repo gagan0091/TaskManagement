@@ -1,0 +1,11 @@
+<% if (pagination && pagination.totalPages > 1) { %>
+<nav aria-label="Pagination">
+    <ul class="pagination">
+        <% for (let p = 1; p <= pagination.totalPages; p++) { %>
+            <li class="page-item <%= p === pagination.page ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= p %><%= typeof extraQuery !== 'undefined' ? extraQuery : '' %>"><%= p %></a>
+            </li>
+        <% } %>
+    </ul>
+</nav>
+<% } %>

@@ -1,0 +1,89 @@
+<%- include('../partials/header') %>
+<h3 class="mb-4"><%= product ? 'Edit' : 'New' %> Product</h3>
+<form method="POST" action="<%= product ? ('/products/' + product._id + '?_method=PUT') : '/products' %>">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" name="name" class="form-control" value="<%= product ? product.name : '' %>" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">SKU</label>
+            <input type="text" name="sku" class="form-control" value="<%= product ? product.sku : '' %>" required>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea name="description" class="form-control" rows="2"><%= product ? (product.description || '') : '' %></textarea>
+    </div>
+
+    <% if (product) { %>
+    <div class="form-check mb-3">
+        <input type="checkbox" name="isActive" class="form-check-input" id="isActive" <%= product.isActive ? 'checked' : '' %>>
+        <label class="form-check-label" for="isActive">Active (can be used in new tasks)</label>
+    </div>
+    <% } %>
+
+    <h5 class="mt-4">Recipe — raw material needed per 1 unit of product</h5>
+    <div id="materialRows">
+        <% var existing = product ? product.materials : [{ material: { _id: '' }, quantityPerUnit: '' }]; %>
+        <% existing.forEach(function (row) { %>
+        <div class="row g-2 mb-2 material-row">
+            <div class="col-md-6">
+                <select name="material" class="form-select" required>
+                    <option value="">Select material...</option>
+                    <% materials && materials.forEach(function (mat) { %>
+                        <option value="<%= mat._id %>" <%= (row.material._id || row.material) == mat._id ? 'selected' : '' %>>
+                            <%= mat.name %> (<%= mat.unit %>)
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input type="number" step="0.001" min="0.001" name="quantityPerUnit" class="form-control"
+                       placeholder="Qty per unit" value="<%= row.quantityPerUnit %>" required>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-danger w-100 remove-row">Remove</button>
+            </div>
+        </div>
+        <% }); %>
+    </div>
+    <button type="button" id="addRow" class="btn btn-sm btn-outline-secondary mb-4">+ Add Material</button>
+
+    <div>
+        <button type="submit" class="btn btn-primary">Save Product</button>
+        <a href="/products" class="btn btn-link">Cancel</a>
+    </div>
+</form>
+
+<template id="rowTemplate">
+    <div class="row g-2 mb-2 material-row">
+        <div class="col-md-6">
+            <select name="material" class="form-select" required>
+                <option value="">Select material...</option>
+                <% materials && materials.forEach(function (mat) { %>
+                    <option value="<%= mat._id %>"><%= mat.name %> (<%= mat.unit %>)</option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <input type="number" step="0.001" min="0.001" name="quantityPerUnit" class="form-control" placeholder="Qty per unit" required>
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-outline-danger w-100 remove-row">Remove</button>
+        </div>
+    </div>
+</template>
+
+<script>
+    document.getElementById('addRow').addEventListener('click', function () {
+        var tpl = document.getElementById('rowTemplate');
+        document.getElementById('materialRows').appendChild(tpl.content.cloneNode(true));
+    });
+    document.getElementById('materialRows').addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-row')) {
+            e.target.closest('.material-row').remove();
+        }
+    });
+</script>
+<%- include('../partials/footer') %>

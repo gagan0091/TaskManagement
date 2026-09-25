@@ -1,0 +1,52 @@
+<%- include('../partials/header') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Tasks</h3>
+    <% if (currentUser.role === 'admin') { %>
+        <a href="/tasks/new" class="btn btn-primary">+ New Task</a>
+    <% } %>
+</div>
+<div class="mb-3">
+    <a href="/tasks" class="btn btn-sm btn-outline-secondary <%= !status ? 'active' : '' %>">All</a>
+    <a href="/tasks?status=pending" class="btn btn-sm btn-outline-secondary <%= status === 'pending' ? 'active' : '' %>">Pending</a>
+    <a href="/tasks?status=in-progress" class="btn btn-sm btn-outline-warning <%= status === 'in-progress' ? 'active' : '' %>">In Progress</a>
+    <a href="/tasks?status=completed" class="btn btn-sm btn-outline-success <%= status === 'completed' ? 'active' : '' %>">Completed</a>
+</div>
+<div class="table-responsive">
+<table class="table table-striped bg-white shadow-sm">
+    <thead>
+        <tr><th>Title</th><th>Product</th><th>Qty</th><th>Assigned To</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        <% tasks.forEach(function (t) { %>
+        <tr>
+            <td><a href="/tasks/<%= t._id %>"><%= t.title %></a></td>
+            <td><%= t.product.name %></td>
+            <td><%= t.quantity %></td>
+            <td><%= t.assignedTo.name %></td>
+            <td>
+                <span class="badge bg-<%= t.status === 'completed' ? 'success' : (t.status === 'in-progress' ? 'warning' : 'secondary') %>">
+                    <%= t.status %>
+                </span>
+            </td>
+            <td class="text-nowrap">
+                <a href="/tasks/<%= t._id %>" class="btn btn-sm btn-outline-secondary">View</a>
+                <% if (t.assignedTo._id === currentUser.id && t.status === 'pending') { %>
+                    <form action="/tasks/<%= t._id %>/status" method="POST" class="d-inline">
+                        <input type="hidden" name="status" value="in-progress">
+                        <button type="submit" class="btn btn-sm btn-outline-warning">Start</button>
+                    </form>
+                <% } %>
+                <% if (t.assignedTo._id === currentUser.id && t.status === 'in-progress') { %>
+                    <form action="/tasks/<%= t._id %>/status" method="POST" class="d-inline">
+                        <input type="hidden" name="status" value="completed">
+                        <button type="submit" class="btn btn-sm btn-outline-success">Complete</button>
+                    </form>
+                <% } %>
+            </td>
+        </tr>
+        <% }); %>
+    </tbody>
+</table>
+</div>
+<%- include('../partials/pagination', { pagination: pagination, extraQuery: status ? ('&status=' + status) : '' }) %>
+<%- include('../partials/footer') %>
